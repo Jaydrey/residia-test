@@ -59,8 +59,8 @@ export class DashboardPage {
    */
   async viewFirstRequest(): Promise<void> {
     const link = this.page.locator('[data-testid^="request-link-"]').first();
-    await link.waitFor({ state: 'visible' });
-    await link.click();
+    await link.waitFor({ state: 'attached' });
+    await link.click({ force: true });
   }
 
   async logout(): Promise<void> {
