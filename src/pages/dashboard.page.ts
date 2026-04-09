@@ -55,12 +55,18 @@ export class DashboardPage {
   }
 
   /**
-   * Clicks the first "View" link in the table — used when you don't know the request ID yet.
+   * Finds a request by title and navigates to its detail page.
+   * Extracts the href from the View link and navigates directly, avoiding
+   * flaky click interactions caused by the table re-rendering after search.
    */
-  async viewFirstRequest(): Promise<void> {
-    const link = this.page.locator('[data-testid^="request-link-"]').first();
-    await link.waitFor({ state: 'attached' });
-    await link.click({ force: true });
+  async openRequest(title: string): Promise<void> {
+    const row = this.page.locator('[data-testid^="request-row-"]', { hasText: title });
+    await row.waitFor({ state: 'attached', timeout: 60_000 });
+    const link = row.locator('[data-testid^="request-link-"]');
+    const href = await link.getAttribute('href');
+    if (href) {
+      await this.page.goto(href);
+    }
   }
 
   async logout(): Promise<void> {

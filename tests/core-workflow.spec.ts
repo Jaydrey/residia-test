@@ -37,8 +37,7 @@ test.describe('Core Workflow', () => {
     await dashboard.waitForLoad();
 
     await dashboard.searchByTitle(title);
-    await dashboard.waitForRequestVisible(title);
-    await dashboard.viewFirstRequest();
+    await dashboard.openRequest(title);
 
     await requestDetail.waitForLoad();
     await requestDetail.waitForStatus('ready_for_review');
@@ -53,8 +52,7 @@ test.describe('Core Workflow', () => {
     await dashboard.waitForLoad();
 
     await dashboard.searchByTitle(title);
-    await dashboard.waitForRequestVisible(title);
-    await dashboard.viewFirstRequest();
+    await dashboard.openRequest(title);
 
     await requestDetail.waitForLoad();
     await requestDetail.waitForStatus('approved');

@@ -1,7 +1,16 @@
 export const users = {
-  alice: { email: 'alice@example.com', password: 'password123' },
-  bob: { email: 'bob@example.com', password: 'password123' },
-  charlie: { email: 'charlie@example.com', password: 'password123' },
+  alice: {
+    email: process.env['ALICE_EMAIL'] ?? '',
+    password: process.env['ALICE_PASSWORD'] ?? '',
+  },
+  bob: {
+    email: process.env['BOB_EMAIL'] ?? '',
+    password: process.env['BOB_PASSWORD'] ?? '',
+  },
+  charlie: {
+    email: process.env['CHARLIE_EMAIL'] ?? '',
+    password: process.env['CHARLIE_PASSWORD'] ?? '',
+  },
 } as const;
 
 export function uniqueTitle(prefix: string): string {

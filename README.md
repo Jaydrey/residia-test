@@ -16,10 +16,17 @@ npm install
 npx playwright install chromium
 ```
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root with the app URL and test user credentials:
 
 ```
 BASE_URL=https://automation-engineer-test.onrender.com
+
+ALICE_EMAIL=alice@example.com
+ALICE_PASSWORD=password123
+BOB_EMAIL=bob@example.com
+BOB_PASSWORD=password123
+CHARLIE_EMAIL=charlie@example.com
+CHARLIE_PASSWORD=password123
 ```
 
 ## Running Tests
