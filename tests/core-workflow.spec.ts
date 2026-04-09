@@ -29,7 +29,7 @@ test.describe('Core Workflow', () => {
     // Verify the request detail page is showing (status may already be ai_analyzing).
 
     // --- STEP 2: Wait for AI analysis to complete ---
-    // Uses Playwright auto-retry via expect().toContainText() -- NO polling loops, NO sleeps
+    // Uses Playwright auto-retry via expect().toHaveAttribute() -- NO polling loops, NO sleeps
     // 90s timeout covers the 20-45s AI analysis window plus Render cold start margin
     await requestDetail.waitForStatus('ready_for_review', 90_000);
 
