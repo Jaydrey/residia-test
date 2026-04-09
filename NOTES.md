@@ -10,15 +10,15 @@ Requests are created with a timestamped title. The app is shared across all cand
 
 ## Key Decisions
 
-**Playwright over Cypress.** The core workflow test requires two browser contexts running concurrently, one for the requester and one for the operator. Cypress runs in a single browser context by default and makes multi-user orchestration awkward. Playwright handles this cleanly with `browser.newContext()`.
+**Playwright over Cypress.** The core workflow test switches between three user roles (Alice, Bob, Charlie) within a single test. Playwright's architecture makes this straightforward, and if I needed to extend this to run roles in parallel contexts, `browser.newContext()` would handle it cleanly. Cypress runs in a single browser context and makes multi-user orchestration awkward.
 
 **TypeScript.** Caught several locator and type errors before running a single test. Not strictly necessary for a take-home, but the feedback loop is fast enough that it pays for itself.
 
-**Async strategy for AI analysis.** The operator triggers an AI analysis step that takes a variable amount of time. I use `expect(locator).toHaveAttribute('data-status', status, { timeout: 60000 })` and let Playwright's built-in retry handle the wait. No polling loops, no `waitForTimeout`. The reason I check the `data-status` attribute rather than visible text is that the attribute value uses underscored keys (`ready_for_review`) while the rendered text has spaces (`ready for review`). Using `toContainText` would require knowing the display format; using `toHaveAttribute` is exact and unambiguous.
+**Async strategy for AI analysis.** The operator triggers an AI analysis step that takes a variable amount of time. I use `expect(locator).toHaveAttribute('data-status', status, { timeout: 90_000 })` and let Playwright's built-in retry handle the wait. No polling loops, no `waitForTimeout`. The reason I check the `data-status` attribute rather than visible text is that the attribute value uses underscored keys (`ready_for_review`) while the rendered text has spaces (`ready for review`). Using `toContainText` would require knowing the display format; using `toHaveAttribute` is exact and unambiguous.
 
 **Modal confirm workaround.** The app's confirm dialogs are not standard `<dialog>` elements or `window.confirm` calls. They are CSS-rendered divs. Playwright's visibility check returns false for them even when they are visible on screen, so a standard `.click()` silently does nothing. I worked around this with `waitForFunction` polling the element's bounding rect for a non-zero height, then `evaluate` to call `.click()` directly on the DOM node. It is not elegant, but it is stable.
 
-**Removed the `submitted` status assertion.** The request transitions from `submitted` to `processing` almost instantly once an operator exists. I could not reliably assert the intermediate state without either slowing the test down with a sleep or introducing a race condition. The assertion was not load-bearing for the lifecycle validation, so I removed it.
+**Removed the `submitted` status assertion.** The request transitions from `submitted` to `ai_analyzing` almost instantly. I could not reliably assert the intermediate state without either slowing the test down with a sleep or introducing a race condition. The assertion was not load-bearing for the lifecycle validation, so I removed it.
 
 ## What Was Hard
 
