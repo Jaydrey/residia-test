@@ -3,21 +3,18 @@ import { LoginPage } from '../src/pages/login.page';
 import { DashboardPage } from '../src/pages/dashboard.page';
 import { NewRequestPage } from '../src/pages/new-request.page';
 import { RequestDetailPage } from '../src/pages/request-detail.page';
+import { users, uniqueTitle } from './test-data';
 
 test.describe('Edge Cases', () => {
   test('invalid login shows error and stays on login page', async ({ page }) => {
     const loginPage = new LoginPage(page);
 
     await loginPage.goto();
-    await loginPage.login('alice@example.com', 'wrongpassword');
+    await loginPage.login(users.alice.email, 'wrongpassword');
 
-    // Error alert should be visible
     await expect(loginPage.errorMessage).toBeVisible();
-
-    // URL should still contain /login
     expect(page.url()).toContain('/login');
 
-    // Dashboard page root should NOT be present
     const dashboard = new DashboardPage(page);
     await expect(dashboard.pageRoot).toBeHidden();
   });
@@ -28,22 +25,20 @@ test.describe('Edge Cases', () => {
     const newRequest = new NewRequestPage(page);
     const requestDetail = new RequestDetailPage(page);
 
-    // Alice (requester) logs in and creates a new request
     await loginPage.goto();
-    await loginPage.login('alice@example.com', 'password123');
+    await loginPage.login(users.alice.email, users.alice.password);
     await dashboard.waitForLoad();
 
     await dashboard.clickNewRequest();
-    const uniqueTitle = `Role Boundary Test ${Date.now()}`;
-    await newRequest.submitRequest(uniqueTitle, 'Testing role boundary: requester should not approve or claim');
+    const title = uniqueTitle('Broken window latch in lobby');
+    await newRequest.submitRequest(title, 'The window latch on the ground floor lobby window is broken and the window cannot be secured properly.');
 
-    // After submission, redirects to request detail page
     await requestDetail.waitForLoad();
 
-    // Wait for AI analysis to complete — same timeout as core workflow
+    // Wait for AI analysis so buttons would appear for authorized roles
     await requestDetail.waitForStatus('ready_for_review', 90_000);
 
-    // Alice is the requester — approve and claim buttons must NOT appear
+    // Alice is the requester — these buttons must not be visible to her
     await expect(requestDetail.approveButton).toBeHidden();
     await expect(requestDetail.claimButton).toBeHidden();
   });

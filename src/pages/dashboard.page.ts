@@ -58,7 +58,9 @@ export class DashboardPage {
    * Clicks the first "View" link in the table — used when you don't know the request ID yet.
    */
   async viewFirstRequest(): Promise<void> {
-    await this.page.locator('[data-testid^="request-link-"]').first().click();
+    const link = this.page.locator('[data-testid^="request-link-"]').first();
+    await link.waitFor({ state: 'visible' });
+    await link.click();
   }
 
   async logout(): Promise<void> {

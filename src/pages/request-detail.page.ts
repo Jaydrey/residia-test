@@ -26,8 +26,7 @@ export class RequestDetailPage {
   // Activity timeline
   readonly timeline: Locator;
 
-  // Confirmation modal elements
-  readonly confirmModal: Locator;
+  // Confirmation dialog buttons
   readonly confirmButton: Locator;
   readonly cancelButton: Locator;
 
@@ -45,9 +44,6 @@ export class RequestDetailPage {
     this.approveButton = page.getByTestId('approve-button');
     this.claimButton = page.getByTestId('claim-button');
     this.timeline = page.getByTestId('timeline');
-    // The modal renders with no data-testid on the container; use the confirm button itself
-    // to detect modal presence. The confirm/cancel buttons do have data-testid.
-    this.confirmModal = page.getByTestId('confirm-button').first();
     this.confirmButton = page.getByTestId('confirm-button').first();
     this.cancelButton = page.getByTestId('cancel-button').first();
   }
