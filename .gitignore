@@ -1,0 +1,5 @@
+node_modules/
+.planning/
+test-results/
+playwright-report/
+blob-report/
