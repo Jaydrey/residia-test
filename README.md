@@ -1,4 +1,4 @@
-# Residia Take-Home: E2E Test Suite
+# Residia Test: E2E Test Suite
 
 Playwright-based end-to-end test suite for a workflow application. Covers login, full request lifecycle across three roles, and boundary/failure cases.
 
@@ -11,7 +11,7 @@ Playwright-based end-to-end test suite for a workflow application. Covers login,
 
 ```bash
 git clone <repo-url>
-cd residia-take-home
+cd residia-test
 npm install
 npx playwright install chromium
 ```
