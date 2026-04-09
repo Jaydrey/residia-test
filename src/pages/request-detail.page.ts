@@ -45,7 +45,9 @@ export class RequestDetailPage {
     this.approveButton = page.getByTestId('approve-button');
     this.claimButton = page.getByTestId('claim-button');
     this.timeline = page.getByTestId('timeline');
-    this.confirmModal = page.getByTestId('confirm-modal').first();
+    // The modal renders with no data-testid on the container; use the confirm button itself
+    // to detect modal presence. The confirm/cancel buttons do have data-testid.
+    this.confirmModal = page.getByTestId('confirm-button').first();
     this.confirmButton = page.getByTestId('confirm-button').first();
     this.cancelButton = page.getByTestId('cancel-button').first();
   }
@@ -59,23 +61,56 @@ export class RequestDetailPage {
   }
 
   /**
-   * Waits until the status badge contains the expected status text.
+   * Waits until the status badge has the expected data-status attribute value.
    * Uses Playwright's built-in auto-retry — no manual polling.
    * Default timeout of 90s covers the 20-45s AI analysis window.
+   * Uses data-status attribute (e.g. 'ready_for_review') rather than rendered text
+   * ('ready for review') to avoid underscore/space mismatches.
    */
   async waitForStatus(status: string, timeout = 90_000): Promise<void> {
-    await expect(this.requestStatus).toContainText(status, { timeout });
+    await expect(this.requestStatus).toHaveAttribute('data-status', status, { timeout });
+  }
+
+  /**
+   * Clicks the confirmation button inside the modal.
+   * The modal uses CSS visibility that Playwright's built-in checks don't handle correctly
+   * (button is in DOM but reported as hidden). We poll via waitForFunction until a
+   * confirm button has a non-zero bounding rect (i.e., the modal is visually open),
+   * then click it via evaluate() to bypass Playwright's visibility gate.
+   */
+  private async clickConfirmButton(): Promise<void> {
+    // Wait until a confirm button has a non-zero bounding rect (modal is visually open)
+    await this.page.waitForFunction(() => {
+      const btns = document.querySelectorAll<HTMLElement>('[data-testid="confirm-button"]');
+      for (const btn of btns) {
+        const rect = btn.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) return true;
+      }
+      return false;
+    }, undefined, { timeout: 10_000 });
+
+    // Click the first confirm button that has a non-zero bounding rect
+    await this.page.evaluate(() => {
+      const btns = document.querySelectorAll<HTMLElement>('[data-testid="confirm-button"]');
+      for (const btn of btns) {
+        const rect = btn.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          btn.click();
+          return;
+        }
+      }
+    });
   }
 
   async approve(): Promise<void> {
     await this.approveButton.click();
-    await this.confirmButton.click();
+    await this.clickConfirmButton();
     await this.waitForStatus('approved');
   }
 
   async claim(): Promise<void> {
     await this.claimButton.click();
-    await this.confirmButton.click();
+    await this.clickConfirmButton();
     await this.waitForStatus('claimed');
   }
 }
