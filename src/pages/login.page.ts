@@ -15,7 +15,9 @@ export class LoginPage {
     this.emailInput = page.getByTestId('login-email-input');
     this.passwordInput = page.getByTestId('login-password-input');
     this.signInButton = page.getByTestId('login-submit-button');
-    this.errorMessage = page.getByRole('alert');
+    // The login form renders errors as a plain div (no ARIA role="alert").
+    // Use a text-based locator scoped to the login page root for resilience.
+    this.errorMessage = page.getByTestId('login-page').locator('div').filter({ hasText: /invalid|incorrect|error/i }).first();
     this.pageRoot = page.getByTestId('login-page');
   }
 
