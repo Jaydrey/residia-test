@@ -22,6 +22,7 @@
   "homepage": "https://github.com/Jaydrey/residia-take-home#readme",
   "devDependencies": {
     "@playwright/test": "^1.59.1",
+    "@types/node": "^25.5.2",
     "dotenv": "^17.4.1",
     "typescript": "^6.0.2"
   }
