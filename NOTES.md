@@ -38,3 +38,4 @@ The shared environment also added friction I did not anticipate. Early runs woul
 - HTML report generation with screenshots on failure
 - Visual regression snapshots for key UI states
 - API contract tests (Pact) alongside the E2E layer
+- Sentry integration on the frontend with a Slack channel for error alerts, so test failures caused by app-side exceptions are immediately visible to the team without digging through logs
